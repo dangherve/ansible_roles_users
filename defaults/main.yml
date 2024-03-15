@@ -1,0 +1,14 @@
+---
+# managed users
+users:
+  - name: sample
+    enabled: true
+    root: true
+    ansible_groups:
+        - sample
+    authorized_keys:
+        - key
+
+
+# removed public keys from every authorized files
+blacklist_public_keys: []

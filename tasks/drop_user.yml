@@ -1,0 +1,37 @@
+---
+
+- name: "Test if user exists"
+  command: "id -u {{ user['name'] }}"
+  register: id
+  failed_when: False
+  changed_when: False
+
+- name: "Remove ssh key for user"
+  authorized_key:
+      key: "{{ lookup('file', 'public_keys/' + item) }}"
+      user: "{{ user['name'] }}"
+      state: absent
+  with_items: "{{ user | authorized_keys }}"
+  when: id.rc == 0
+  tags:
+    - users
+
+- name: "Remove ssh key(s) for root"
+  authorized_key:
+    user: root
+    key: "{{ lookup('file', 'public_keys/' + user['name'] + '.pub') }}"
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - /root/.ssh/authorized_keys
+    - /root/.ssh/authorized_keys2
+    - /root/.ssh/authorized_keys_chef
+  ignore_errors: yes
+  tags:
+    - users
+
+- name: "Remove unix user"
+  user: name={{ user['name'] }} state=absent
+  tags:
+    - users
+

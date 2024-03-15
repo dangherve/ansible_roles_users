@@ -1,0 +1,28 @@
+---
+
+- name: include create_user.yaml tasks file
+  include_tasks: create_user.yml
+  with_items: "{{ users }}"
+  when: "user | is_user_on_this_srv(ansible_fqdn, group_names) and user['enabled']"
+  loop_control:
+   loop_var: user
+  tags:
+    - users
+
+- name: include drop_user.yml tasks file
+  include_tasks: drop_user.yml
+  with_items: "{{ users }}"
+  when: "user | is_user_on_this_srv(ansible_fqdn, group_names) and not user['enabled']"
+  loop_control:
+    loop_var: user
+  tags:
+    - users
+
+- name: include blacklist.yml tasks file
+  include_tasks: blacklist.yml
+  with_items: "{{ blacklist_public_keys }}"
+  loop_control:
+   loop_var: pub_key
+  tags:
+    - users
+    - blacklist

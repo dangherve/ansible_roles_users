@@ -1,0 +1,45 @@
+---
+
+- name: "Find active unix users"
+  shell: >
+      grep -E -v "/bin/false|/usr/sbin/nologin|/bin/sync" /etc/passwd
+  changed_when: false
+  register: users
+  tags:
+    - users
+    - blacklist
+
+- name: "Blacklist ssh key in authorized_keys"
+  authorized_key:
+      user: "{{ item.split(':')[0] }}"
+      key: "{{ lookup('file', 'public_keys/' + pub_key) }}"
+      state: absent
+  with_items:
+        "{{users.stdout_lines}}"
+  tags:
+    - users
+    - blacklist
+
+- name: "Blacklist ssh key in authorized_keys2"
+  authorized_key:
+      user: "{{ item.split(':')[0] }}"
+      key: "{{ lookup('file', 'public_keys/' + pub_key) }}"
+      path: "{{ item.split(':')[5] }}/.ssh/authorized_keys2"
+      state: absent
+  with_items:
+      "{{users.stdout_lines}}"
+  tags:
+    - users
+    - blacklist
+
+- name: "Blacklist ssh key in authorized_keys_chef"
+  authorized_key:
+      user: "{{ item.split(':')[0] }}"
+      key: "{{ lookup('file', 'public_keys/' + pub_key) }}"
+      path: "{{ item.split(':')[5] }}/.ssh/authorized_keys_chef"
+      state: absent
+  with_items:
+        "{{users.stdout_lines}}"
+  tags:
+    - users
+    - blacklist
