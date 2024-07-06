@@ -15,7 +15,7 @@
       key: "{{ lookup('file', 'public_keys/' + pub_key) }}"
       state: absent
   with_items:
-        "{{users.stdout_lines}}"
+        "{{ users.stdout_lines }}"
   tags:
     - users
     - blacklist
@@ -27,7 +27,7 @@
       path: "{{ item.split(':')[5] }}/.ssh/authorized_keys2"
       state: absent
   with_items:
-      "{{users.stdout_lines}}"
+      "{{ users.stdout_lines }}"
   tags:
     - users
     - blacklist
@@ -39,7 +39,7 @@
       path: "{{ item.split(':')[5] }}/.ssh/authorized_keys_chef"
       state: absent
   with_items:
-        "{{users.stdout_lines}}"
+        "{{ users.stdout_lines }}"
   tags:
     - users
     - blacklist
