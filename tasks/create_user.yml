@@ -10,7 +10,7 @@
 
 - name: "Add ssh_key keys for user  {{ user['name'] }}"
   authorized_key:
-    key: "{{ lookup('file', 'public_keys/' + item) }}"
+    key: "{{ lookup('file', 'ssh_key/' + item) }}"
     user: "{{ user['name'] }}"
   with_items: "{{ user | authorized_keys }}"
   tags:
